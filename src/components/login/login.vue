@@ -32,10 +32,11 @@ export default {
         data: this.formdata
       })
       const {
-        //   data,
+        data,
         meta: { msg, status }
       } = res.data
       if (status === 200) {
+        localStorage.setItem('tonen', data.token)
         this.$router.push({name: 'home'})
         this.$message.success(msg)
       } else {
