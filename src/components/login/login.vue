@@ -36,7 +36,7 @@ export default {
           meta: { msg, status }
         } = res.data
         if (status === 200) {
-        //   this.$router.push({name: 'home'})
+          this.$router.push({name: 'home'})
           this.$message.success(msg)
         } else {
           this.$message.warning(msg)
