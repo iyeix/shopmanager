@@ -25,23 +25,38 @@ export default {
   },
   methods: {
     //  登录请求
-    handleLogin () {
-      this.$axios({
+    async handleLogin () {
+      const res = await this.$axios({
         url: 'login',
         method: 'post',
         data: this.formdata
-      }).then(res => {
-        const {
-        //   data,
-          meta: { msg, status }
-        } = res.data
-        if (status === 200) {
-          this.$router.push({name: 'home'})
-          this.$message.success(msg)
-        } else {
-          this.$message.warning(msg)
-        }
       })
+      const {
+        //   data,
+        meta: { msg, status }
+      } = res.data
+      if (status === 200) {
+        this.$router.push({name: 'home'})
+        this.$message.success(msg)
+      } else {
+        this.$message.warning(msg)
+      }
+    //   this.$axios({
+    //     url: 'login',
+    //     method: 'post',
+    //     data: this.formdata
+    //   }).then(res => {
+    //     const {
+    //     //   data,
+    //       meta: { msg, status }
+    //     } = res.data
+    //     if (status === 200) {
+    //       this.$router.push({name: 'home'})
+    //       this.$message.success(msg)
+    //     } else {
+    //       this.$message.warning(msg)
+    //     }
+    //   })
     }
   }
 }
