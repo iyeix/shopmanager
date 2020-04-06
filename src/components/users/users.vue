@@ -59,6 +59,8 @@ export default {
   data () {
     return {
       query: '',
+      pagenum: 1,
+      pagesize: 2,
       tableData: [
         {
           date: '2016-05-02',
@@ -71,6 +73,25 @@ export default {
           address: '上海市普陀区金沙江路 1517 弄'
         }
       ]
+    }
+  },
+  created () {
+    this.getUserList()
+  },
+  methods: {
+    //   获取用户列表请求
+    async getUserList () {
+    //   需要授权的 API ，必须在请求头中使用 `Authorization` 字段提供 `token` 令牌
+      const AUTH_TOKEN = localStorage.getItem('token')
+      this.$axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      const res = await this.$axios({
+        // query查询参数可以为空
+        // pagenum当前页码不能为空
+        // pagesize每页显示条数不能为空
+        url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
+        methods: 'get'
+      })
+      console.log(res)
     }
   }
 }
