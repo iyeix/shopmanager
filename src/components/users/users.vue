@@ -16,6 +16,40 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
+    <el-table
+      :data="tableData"
+      style="width: 100%">
+      <el-table-column
+        type="index"
+        label="#"
+        width="60">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="姓名"
+        width="80">
+      </el-table-column>
+      <el-table-column
+        prop="email"
+        label="邮箱">
+      </el-table-column>
+      <el-table-column
+        prop="tel"
+        label="电话">
+      </el-table-column>
+      <el-table-column
+        prop="data"
+        label="创建日期">
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        label="用户状态">
+      </el-table-column>
+      <el-table-column
+        prop="do"
+        label="操作">
+      </el-table-column>
+    </el-table>
     <!-- 分页 -->
   </el-card>
 </template>
@@ -24,7 +58,19 @@
 export default {
   data () {
     return {
-      query: ''
+      query: '',
+      tableData: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        }
+      ]
     }
   }
 }
