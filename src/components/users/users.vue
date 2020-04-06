@@ -17,7 +17,7 @@
     </el-row>
     <!-- 表格 -->
     <el-table
-      :data="tableData"
+      :data="userlist"
       style="width: 100%">
       <el-table-column
         type="index"
@@ -25,7 +25,7 @@
         width="60">
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="username"
         label="姓名"
         width="80">
       </el-table-column>
@@ -34,20 +34,41 @@
         label="邮箱">
       </el-table-column>
       <el-table-column
-        prop="tel"
+        prop="mobile"
         label="电话">
       </el-table-column>
+
+<!-- {{create_time | fmtdate}} -->
       <el-table-column
-        prop="data"
         label="创建日期">
+        <!-- 单元格内显示的内容不是字符串，需要给被显示的内容外包裹一个template -->
+        <!-- template内要用数据，设置slot-scope属性，
+        该属性的值是要用数据的数据源userlist,
+        该属性会自动查找上一级数据，故习惯slot-scope="scope"，
+        scope.row->数组中的每个对象
+         -->
+        <template slot-scope="scope">{{scope.row.create_time | fmtdate}}</template>
       </el-table-column>
+
       <el-table-column
-        prop="status"
         label="用户状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
+
       <el-table-column
-        prop="do"
+        prop="???"
         label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
+          <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -61,18 +82,10 @@ export default {
       query: '',
       pagenum: 1,
       pagesize: 2,
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }
-      ]
+      // 表格绑定数据
+      userlist: [],
+      // 分页相关数据
+      total: -1
     }
   },
   created () {
@@ -92,6 +105,18 @@ export default {
         methods: 'get'
       })
       console.log(res)
+      const {meta: {msg, status}, data: {users, total}} = res.data
+      if (status === 200) {
+        // 给表格数据赋值
+        this.userlist = users
+        // 给total赋值
+        this.total = total
+        // 提示
+        this.$message.success(msg)
+      } else {
+        // 提示
+        this.$message.warning(msg)
+      }
     }
   }
 }
