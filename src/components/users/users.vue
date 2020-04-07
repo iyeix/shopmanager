@@ -67,7 +67,13 @@
         label="操作">
         <template slot-scope="scope">
           <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
+          <el-button
+           size="mini"
+           plain
+           type="danger"
+           icon="el-icon-delete"
+           circle
+           @click="showDeleUserMsgBox(scope.row.id)"></el-button>
           <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
         </template>
       </el-table-column>
@@ -196,6 +202,32 @@ export default {
       }
       // 关闭对话框
       this.dialogFormVisibleAdd = false
+    },
+    // 删除
+    showDeleUserMsgBox (userId) {
+      // 删除用户,打开提醒框
+      this.$confirm('删除用户?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 发送删除请求
+        const res = await this.$axios.delete(`users/${userId}`)
+        console.log(res)
+        if (res.data.meta.status === 200) {
+          this.$message({
+            type: 'success',
+            message: res.data.meta.msg
+          })
+          this.getUserList()
+          this.pagenum = 1
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     // 分页相关
     handleSizeChange (val) {
