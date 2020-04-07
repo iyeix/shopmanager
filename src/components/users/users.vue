@@ -66,7 +66,13 @@
         prop="???"
         label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button
+          size="mini"
+          plain
+          type="primary"
+          icon="el-icon-edit"
+          circle
+          @click="showEditUserDia(scope.row)"></el-button>
           <el-button
            size="mini"
            plain
@@ -116,6 +122,28 @@
         <el-button type="primary" @click="addUser()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑用户的对话框 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="* 用户名" label-width="100px">
+          <el-input disabled v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-form :model="form">
+        <el-form-item label="邮 箱" label-width="100px">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-form :model="form">
+        <el-form-item label="电 话" label-width="100px">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -138,7 +166,9 @@ export default {
         password: '',
         email: '',
         mobile: ''
-      }
+      },
+      // 添加对话框的属性
+      dialogFormVisibleEdit: false
     }
   },
   created () {
@@ -183,6 +213,7 @@ export default {
     showAddUserDia () {
     // 显示对话框
       this.dialogFormVisibleAdd = true
+      this.form = {}
     },
     async addUser () {
     // 发送请求
@@ -228,6 +259,19 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 编辑
+    showEditUserDia (user) {
+      // 显示对话框
+      this.form = user
+      this.dialogFormVisibleEdit = true
+    },
+    async editUser () {
+      // 发送请求
+      const res = await this.$axios.put(`users/${this.form.id}`, this.form)
+      console.log(res)
+      this.dialogFormVisibleEdit = false
+      this.getUserList()
     },
     // 分页相关
     handleSizeChange (val) {
