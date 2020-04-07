@@ -7,6 +7,7 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    { path: '/', redirect: '/login' },
     {
       name: 'login',
       path: '/login',
@@ -14,12 +15,12 @@ export default new Router({
     },
     {
       name: 'home',
-      path: '/',
+      path: '/home',
       component: Home,
       children: [
         {
-          name: 'users',
-          path: 'users',
+          name: '/users',
+          path: '/users',
           component: Users
         }
       ]
