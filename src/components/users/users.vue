@@ -9,8 +9,9 @@
     <!-- 搜索 -->
     <el-row class="searchRow">
       <el-col>
-        <el-input placeholder="请输入内容" v-model="query" class="inputSearch">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <!-- clear:在点击由clearable 属性生成的清空按钮时触发 -->
+        <el-input @clear="loadUserList()" clearable placeholder="请输入内容" v-model="query" class="inputSearch">
+          <el-button @click="srarchUser()" slot="append" icon="el-icon-search"></el-button>
         </el-input>
         <el-button type="success" plain>添加用户</el-button>
       </el-col>
@@ -72,6 +73,15 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="2"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -117,6 +127,26 @@ export default {
         // 提示
         this.$message.warning(msg)
       }
+    },
+    // 搜索用户
+    srarchUser () {
+      this.getUserList()
+    },
+    // 清空搜索框，重新获取数据
+    loadUserList () {
+      this.getUserList()
+    },
+    // 分页相关
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.pagesize = val
+      //   this.pagenum = 1
+      this.getUserList()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.pagenum = val
+      this.getUserList()
     }
   }
 }
