@@ -73,7 +73,8 @@
           type="primary"
           icon="el-icon-edit"
           circle
-          @click="showEditUserDia(scope.row)"></el-button>
+          @click="showEditUserDia(scope.row)"
+          ></el-button>
           <el-button
            size="mini"
            plain
@@ -81,7 +82,14 @@
            icon="el-icon-delete"
            circle
            @click="showDeleUserMsgBox(scope.row.id)"></el-button>
-          <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+          <el-button
+          size="mini"
+          plain
+          type="success"
+          icon="el-icon-check"
+          circle
+          @click="showSetUserRoleDia(scope.row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -145,6 +153,25 @@
         <el-button type="primary" @click="editUser()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 角色分配对话框 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleRol">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">
+          {{currUsername}}
+        </el-form-item>
+        <el-form-item label="角色" label-width="100px">
+          <!-- 如果select的绑定的数据的值 和 option的value一样, 就会显示该option的label值 -->
+          <el-select v-model="currRoleId">
+            <el-option label="请选择" :value="-1"></el-option>
+            <el-option :label="item.roleName" :value="item.id" v-for="(item,i) in roles" :key="i"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRol = false">取 消</el-button>
+        <el-button type="primary" @click="setRole()">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -169,7 +196,15 @@ export default {
         mobile: ''
       },
       // 添加对话框的属性
-      dialogFormVisibleEdit: false
+      dialogFormVisibleEdit: false,
+      // 角色分配对话框的属性
+      dialogFormVisibleRol: false,
+      // 分配角色
+      currRoleId: -1,
+      currUsername: '',
+      currUserId: -1,
+      // 保存所有角色数据
+      roles: []
     }
   },
   created () {
@@ -181,14 +216,15 @@ export default {
     //   需要授权的 API ，必须在请求头中使用 `Authorization` 字段提供 `token` 令牌
       const AUTH_TOKEN = localStorage.getItem('token')
       this.$axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
-      const res = await this.$axios({
-        // query查询参数可以为空
-        // pagenum当前页码不能为空
-        // pagesize每页显示条数不能为空
-        url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
-        methods: 'get'
-      })
-      console.log(res)
+      // const res = await this.$axios({
+      //     // query查询参数可以为空
+      //     // pagenum当前页码不能为空
+      //     // pagesize每页显示条数不能为空
+      //     url: `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
+      //     methods: 'get'
+      // })
+      const res = await this.$axios.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+      // console.log(res)
       const {meta: {msg, status}, data: {users, total}} = res.data
       if (status === 200) {
         // 给表格数据赋值
@@ -219,13 +255,13 @@ export default {
     async addUser () {
     // 发送请求
       this.dialogFormVisibleAdd = false
-      //   const res = await this.$axios.post(`users`, this.form)
-      const res = await this.$axios({
-        url: 'users',
-        method: 'post',
-        data: this.form
-      })
-      console.log(res)
+      const res = await this.$axios.post(`users`, this.form)
+      // const res = await this.$axios({
+      //     url: 'users',
+      //     method: 'post',
+      //     data: this.form
+      // })
+      // console.log(res)
       const {meta: {status, msg}} = res.data
       if (status === 201) {
         // 提示成功
@@ -256,8 +292,8 @@ export default {
             type: 'success',
             message: res.data.meta.msg
           })
-          this.getUserList()
           this.pagenum = 1
+          this.getUserList()
         }
       }).catch(() => {
         this.$message({
@@ -283,6 +319,28 @@ export default {
     async changeMgState (user) {
       const res = await this.$axios.put(`users/${user.id}/state/${user.mg_state}`)
       console.log(res)
+    },
+    // 角色分配
+    async showSetUserRoleDia (user) {
+      this.currUsername = user.username
+      this.currUserId = user.id
+      this.dialogFormVisibleRol = true
+      // 获取所有角色
+      const res1 = await this.$axios.get(`roles`)
+      // console.log(res1)
+      this.roles = res1.data.data
+      // 获取当前用户的角色id
+      const res = await this.$axios.get(`users/${user.id}`)
+      // console.log(res)
+      this.currRoleId = res.data.data.rid
+    },
+    async setRole () {
+      // 分配角色-发送请求
+      const res = await this.$axios.put(`users/${this.currUserId}/role`, {
+        rid: this.currRoleId
+      })
+      console.log(res)
+      this.dialogFormVisibleRol = false
     },
     // 分页相关
     handleSizeChange (val) {

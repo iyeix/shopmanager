@@ -12,7 +12,8 @@ import moment from 'moment'
 // 使用element-ui
 Vue.use(ElementUI)
 Vue.prototype.$axios = Axios
-Axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
+// Axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/'
+Axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 
 Vue.config.productionTip = false
 
