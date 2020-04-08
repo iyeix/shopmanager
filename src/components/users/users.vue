@@ -55,6 +55,7 @@
         label="用户状态">
         <template slot-scope="scope">
           <el-switch
+            @change="changeMgState(scope.row)"
             v-model="scope.row.mg_state"
             active-color="#13ce66"
             inactive-color="#ff4949">
@@ -218,7 +219,12 @@ export default {
     async addUser () {
     // 发送请求
       this.dialogFormVisibleAdd = false
-      const res = await this.$axios.post(`users`, this.form)
+      //   const res = await this.$axios.post(`users`, this.form)
+      const res = await this.$axios({
+        url: 'users',
+        method: 'post',
+        data: this.form
+      })
       console.log(res)
       const {meta: {status, msg}} = res.data
       if (status === 201) {
@@ -272,6 +278,11 @@ export default {
       console.log(res)
       this.dialogFormVisibleEdit = false
       this.getUserList()
+    },
+    // 修改状态
+    async changeMgState (user) {
+      const res = await this.$axios.put(`users/${user.id}/state/${user.mg_state}`)
+      console.log(res)
     },
     // 分页相关
     handleSizeChange (val) {
